@@ -1,39 +1,45 @@
-package com.laioffer.spotify.ui.favorite
+package com.laioffer.spotify.ui.playlist
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.laioffer.spotify.R
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FavoriteFragment : Fragment() {
-    private val viewModel: FavoriteViewModel by viewModels()
+class PlaylistFragment : Fragment() {
+    private val navArgs by navArgs<PlaylistFragmentArgs>()
+    private val viewModel: PlaylistViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme(colors = darkColors()) {
-                    FavoriteScreen(viewModel, onTap = {
-                        val direction =
-                            FavoriteFragmentDirections.actionFavoriteFragmentToPlaylistFragment(it)
-                        findNavController().navigate(direction)
-                    })
+                    PlaylistScreen(
+                        playlistViewModel = viewModel
+                    )
                 }
             }
         }
-
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d("PlaylistFragment", navArgs.album.toString())
+        viewModel.fetchPlaylist(navArgs.album)
+    }
+
 }
 
